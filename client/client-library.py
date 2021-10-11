@@ -1,13 +1,16 @@
 import sys
 import socket
+import time
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 
-img = "./file/lambang-its-png-v2.png"
+img = "./file.png"
 imgfile = open(img, 'rb')
 data = imgfile.read()
-file_out = open("encrypted_data.bin", "wb")
+file_out = open("crypted-library.bin", "wb")
+
+time_before = time.time()
 
 recipient_key = RSA.import_key(open("../receiver.pem").read())
 session_key = get_random_bytes(16)
@@ -25,6 +28,8 @@ print(len(cipher_aes.nonce))
 [ file_out.write(x) for x in (enc_session_key, cipher_aes.nonce, ciphertext) ]
 file_out.close()
 
+time_after = time.time()
+print('New file here: --', time_after - time_before, ' seconds')
 
 server_ip = ['127.0.0.1']
 count = 0
@@ -40,7 +45,7 @@ for i in server_ip:
 
     try:
         # Send data
-        img = "encrypted_data.bin"
+        img = "crypted-library.bin"
         imgfile = open(img, 'rb')
         imgbytes = imgfile.read()
         print(f"sending {img}")

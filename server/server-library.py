@@ -1,4 +1,5 @@
 import sys
+import time
 import socket
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
@@ -17,7 +18,7 @@ while True:
     connection, client_address = sock.accept()
     print(f"connection from {client_address}")
     # Receive the data in small chunks and retransmit it
-    f = open("encrypted_data.bin", "wb")
+    f = open("crypted-library.bin", "wb")
     while True:
         data = connection.recv(32)
         f.write(data)
@@ -29,7 +30,9 @@ while True:
     connection.close()
     break;
 
-file_in = open("encrypted_data.bin", "rb")
+file_in = open("crypted-library.bin", "rb")
+
+time_before = time.time()
 
 private_key = RSA.import_key(open("../private.pem").read())
 
@@ -43,6 +46,9 @@ session_key = cipher_rsa.decrypt(enc_session_key)
 # Decrypt the data with the AES session key
 cipher_aes = AES.new(session_key, AES.MODE_CTR, nonce=nonce)
 data = cipher_aes.decrypt(ciphertext)
-f = open("image.png", "wb")
+f = open("decrypted-library.png", "wb")
 f.write(data)
 f.close()
+
+time_after = time.time()
+print('New file here:--', time_after - time_before, ' seconds')
